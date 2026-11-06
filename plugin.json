@@ -1,7 +1,7 @@
 {
   "id": "neodex.flux",
   "name": "Flux",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "NDesumeur",
   "description": "Tes flux RSS et tes chaînes YouTube dans l'ordre de parution, sans algorithme ; les nouveautés s'affichent sur l'accueil.",
   "icon": "icon.png",
