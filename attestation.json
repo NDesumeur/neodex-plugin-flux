@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.flux",
   "repo": "NDesumeur/neodex-plugin-flux",
-  "version": "1.0.2",
-  "sha256": "3a25cacd665b3e8286856f5789596135b52060a918e97634c96041f47dd25e09",
-  "approvedAt": "2026-11-07T13:39:25.855Z",
+  "version": "1.0.3",
+  "sha256": "6a9ea04dd9e1f099cafb67a73fb9944b932ef5f9284e325b51bef95180375354",
+  "approvedAt": "2026-11-07T21:03:07.839Z",
   "neobase": ">=4.0.0",
-  "signature": "8rg2KQuAsoCnPgA4JgNAiknWj1oaGYZnRv4rVYJ9cXOU7HB7/zoo+qi5KRaRTIqpPu5X8JBE2aZ/xdSxEEWgCg=="
+  "signature": "ahXEBOKx/FUbHxua8lfYxRVnIYE0aIUnTiG5ijcg5CNuNPl1gszS5R17mPFCGzT9wPT6JgCjqgoK6XKS5dKrAA=="
 }
