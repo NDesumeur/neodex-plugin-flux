@@ -53,7 +53,7 @@ export default async function (ctx) {
   host.addStyle(CSS);
   let st = (await ctx.storage.get()) || {};
   st.sources = st.sources || []; st.items = st.items || {}; st.read = st.read || []; st.later = st.later || [];
-  let read = new Set(st.read), only = null, busy = false, tab = 'new', q = '', sel = null;
+  let read = new Set(st.read), only = null, busy = false, tab = 'new', q = '', sel = null, narrow = false, showAll = false;
   const save = () => { st.read = [...read].slice(-READMAX); st.later = st.later.slice(0, LATERMAX); return ctx.storage.set(st); };
 
   const fetchText = async url => { const r = await ctx.net(url); if (!r.ok) throw new Error('erreur ' + r.status); return r.body; };
@@ -171,7 +171,8 @@ export default async function (ctx) {
     let items = only === '@later' ? st.later.map(x => ({ ...x, src: st.sources.find(s => s.feed === x.feed) || { title: x.srcTitle, feed: x.feed } })) : all().filter(i => !only || i.src.feed === only);
     if (tab === 'new' && only !== '@later') items = items.filter(i => !read.has(i.id) || i.id === sel);
     if (q) items = items.filter(i => (i.title + ' ' + (i.sum || '')).toLowerCase().includes(q));
-    items = items.slice(0, 200);
+    const more = narrow && !showAll && items.length > 5 ? items.length - 5 : 0;
+    items = items.slice(0, more ? 5 : 200);
     const out = []; let day = '';
     for (const i of items) {
       const d = dayOf(i.at); if (d !== day) { day = d; out.push(el('div', 'fxDay', d)); }
@@ -193,6 +194,7 @@ export default async function (ctx) {
       } else e.append(el('div', '', only === '@later' ? 'Rien de gardé pour plus tard (clic droit sur un article).' : tab === 'new' ? 'Tout est lu. ✓' : 'Rien pour l\'instant.'));
       out.push(e);
     }
+    if (more) { const b = el('button', 'btn px', 'VOIR TOUT (' + more + ' de plus)'); b.style.margin = '8px auto'; b.onclick = () => { showAll = true; render(); }; out.push(b); }
     list.replaceChildren(...out);
     renderReader(sel && (all().find(i => i.id === sel) || st.later.find(x => x.id === sel)));
   }
@@ -224,5 +226,7 @@ export default async function (ctx) {
     const r = parse('<rss><channel><title>T</title><item><title>A &amp; B</title><link>https://x.fr/a</link><description>&lt;p&gt;Bonjour &lt;img src="https://x.fr/i.png"&gt;&lt;/p&gt;</description><pubDate>Mon, 02 Nov 2026 10:00:00 GMT</pubDate></item></channel></rss>', 'https://x.fr/f');
     console.assert(r.title === 'T' && r.items[0].title === 'A & B' && r.items[0].sum === 'Bonjour' && r.items[0].img === 'https://x.fr/i.png', 'flux', r);
   }
+  // épinglé sur le côté (colonne étroite) : 5 articles, puis « Voir tout »
+  new ResizeObserver(() => { const n = view.clientWidth < 520; if (n !== narrow) { narrow = n; showAll = false; render(); } }).observe(view);
   render(); widget(); refreshAll();
 }
