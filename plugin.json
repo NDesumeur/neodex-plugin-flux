@@ -1,7 +1,7 @@
 {
   "id": "neodex.flux",
   "name": "Flux",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "NDesumeur",
   "description": "Un lecteur de flux sans algorithme : colle un flux RSS ou Atom, l'adresse d'un site ou une chaîne YouTube, et les articles arrivent dans l'ordre de parution, rangés par date avec extrait et image. Lecture dans un panneau, liste « plus tard », filtre par source, recherche, et mise à jour toutes les 30 minutes même onglet fermé, avec widget d'accueil et notification des nouveautés.",
   "icon": "icon.png",
