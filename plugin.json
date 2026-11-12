@@ -10,6 +10,7 @@
   "neobase": ">=4.0.0",
   "type": "app",
   "category": "Internet",
+  "compatibility": ["windows", "linux"],
   "syncMode": "fusion",
   "syncInfo": "Tes flux RSS et les articles lus.",
   "mobile": false,
