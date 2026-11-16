@@ -96,8 +96,8 @@ export default async function (ctx) {
     }).filter(i => i.link && /^https?:/i.test(i.link));
     return { title, items: items.sort((a, b) => b.at - a.at).slice(0, KEEP) };
   }
-  async function refresh(src) {
-    try { const r = parse(await fetchText(src.feed), src.feed); src.title = src.title || r.title; src.err = '';
+  async function refresh(src, xml) {  // xml : le flux déjà lu (l'auto-test le donne, sans réseau)
+    try { const r = parse(xml ?? await fetchText(src.feed), src.feed); src.title = src.title || r.title; src.err = '';
       const old = st.items[src.feed]; st.items[src.feed] = r.items;
       if (!old) for (const i of r.items.slice(3)) read.add(i.id);  // nouvelle source : seuls ses 3 derniers comptent comme nouveaux
     } catch (e) { src.err = e.message; }
@@ -198,15 +198,18 @@ export default async function (ctx) {
     list.replaceChildren(...out);
     renderReader(sel && (all().find(i => i.id === sel) || st.later.find(x => x.id === sel)));
   }
+  async function addSource(feed, xml) {
+    if (st.sources.some(s => s.feed === feed)) throw new Error('déjà dans ta liste');
+    const src = { feed, title: '' }; await refresh(src, xml);
+    if (src.err) throw new Error(src.err);
+    st.sources.push(src); await save(); render(); widget(); return src;
+  }
+  view.__fx = { add: addSource, reset: async () => { st.sources = []; st.items = {}; st.later = []; read.clear(); only = null; tab = 'new'; await save(); render(); widget(); } };  // pour l'auto-test (qui part d'une liste vide)
   addB.onclick = async () => {
     if (!inp.value.trim()) return;
     addB.disabled = true;
     try {
-      const feed = await resolve(inp.value);
-      if (st.sources.some(s => s.feed === feed)) throw new Error('déjà dans ta liste');
-      const src = { feed, title: '' }; await refresh(src);
-      if (src.err) throw new Error(src.err);
-      st.sources.push(src); inp.value = ''; await save(); render(); widget(); host.toast('Ajouté : ' + src.title);
+      const src = await addSource(await resolve(inp.value)); inp.value = ''; host.toast('Ajouté : ' + src.title);
     } catch (e) { host.toast('Impossible d\'ajouter : ' + e.message, true); }
     addB.disabled = false;
   };
